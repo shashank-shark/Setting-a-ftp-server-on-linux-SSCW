@@ -1,0 +1,66 @@
+		===================================================================================================
+		|				    SAPPHIRE-CODER-WORKSTATIONS					  |
+		===================================================================================================
+
+		This file explains how to solve the errors that occur while hosting a ftp server for ANONYMOUS-LOGINS
+	        on linux.
+		
+		----------
+		|  ERR	 | 425 Connection failed to establish vsftpd linux:
+		|--------|
+		
+		=> First of all check the contents of the file vsftpd (very secure ftp deamon)
+
+			vi /etc/vsftpd/vsftpd.conf
+
+			check following parameters are uncommented and value is set as given
+
+		   ---------------------------------------------------------------------------------------------
+		   |											       |
+		   |	anonymous_enable=YES (NO in case of not allowing anonymous)                            |
+		   |	local_enable=YES								       |
+		   |	write_enable=YES								       |
+		   |	xferlog_enable=YES								       |
+		   |	connect_from_port_20=YES							       |
+		   |	xferlog_std_format=YES								       |
+		   |	data_connection_timeout=120							       |
+		   |	listen=NO									       |
+		   |	pam_service_name=vsftpd								       |
+		   |	userlist_enable=YES								       |
+		   |	tcp_wrappers=YES								       |
+		   |--------------------------------------------------------------------------------------------
+
+
+		
+		  -------------------
+		  |	CAUTION	    |
+		  ------------------
+		
+			=> Check your iptable service. if it’s on, change it to off.
+
+			$sudo /etc/init.d/iptables stop
+
+	
+			=> If above solution doesn’t work. run following command.
+			
+			$sudo modprobe ip_conntrack_ftp
+
+		
+		-------------------------------
+		|	PORT FORWARDING	      |
+		-------------------------------
+
+		=> add these lines in the vsftpd.conf file
+		
+		pasv_enable=yes (will be enables by default. Just to make sure it is enabled)
+		pasv_min_port=40000
+		pasv_max_port=50000
+
+		Very IMP step:
+		=============
+
+		Allow the same ports to be access in iptables.
+
+		$ sudo iptables -I INPUT -p tcp --destination-port 40000:50000 -j ACCEPT
+
+
